@@ -11,6 +11,10 @@
     <modules>
         <module>state</module>
         <module>commons</module>
+        <module>server</module>
+        <module>proto</module>
+        <module>game-server</module>
+        <module>commons-data</module>
     </modules>
 
     <properties>

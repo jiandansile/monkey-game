@@ -1,6 +1,6 @@
 package cn.monkey.state.scheduler;
 
-public class StateGroupFactoryConfig {
+public class StateGroupSchedulerFactoryConfig {
     private static final int DEFAULT_MAX_SIZE = 50;
     private static final long DEFAULT_UPDATE_FREQUENCY = 50L;
 
@@ -16,7 +16,7 @@ public class StateGroupFactoryConfig {
         return updateFrequency;
     }
 
-    private StateGroupFactoryConfig() {
+    private StateGroupSchedulerFactoryConfig() {
     }
 
 
@@ -25,10 +25,10 @@ public class StateGroupFactoryConfig {
     }
 
     static class Builder {
-        private final StateGroupFactoryConfig config;
+        private final StateGroupSchedulerFactoryConfig config;
 
         Builder() {
-            this.config = new StateGroupFactoryConfig();
+            this.config = new StateGroupSchedulerFactoryConfig();
         }
 
         public Builder maxSize(int maxSize) {
@@ -41,7 +41,7 @@ public class StateGroupFactoryConfig {
             return this;
         }
 
-        public StateGroupFactoryConfig build() {
+        public StateGroupSchedulerFactoryConfig build() {
             return this.config;
         }
     }

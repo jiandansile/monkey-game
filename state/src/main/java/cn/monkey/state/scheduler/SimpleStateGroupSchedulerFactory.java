@@ -2,9 +2,9 @@ package cn.monkey.state.scheduler;
 
 public class SimpleStateGroupSchedulerFactory implements StateGroupSchedulerFactory {
 
-    protected final StateGroupFactoryConfig stateGroupFactoryConfig;
+    protected final StateGroupSchedulerFactoryConfig stateGroupFactoryConfig;
 
-    public SimpleStateGroupSchedulerFactory(StateGroupFactoryConfig stateGroupFactoryConfig) {
+    public SimpleStateGroupSchedulerFactory(StateGroupSchedulerFactoryConfig stateGroupFactoryConfig) {
         this.stateGroupFactoryConfig = stateGroupFactoryConfig;
     }
 
