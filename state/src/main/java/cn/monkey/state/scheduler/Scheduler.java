@@ -6,7 +6,7 @@ public interface Scheduler {
 
     void start();
 
-    boolean isStart();
+    boolean isStarted();
 
     void stop();
 }

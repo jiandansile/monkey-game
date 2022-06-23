@@ -4,6 +4,12 @@ public interface State<Event> {
 
     String code();
 
+    StateGroup<Event> getStateGroup();
+
+    default StateContext getStateContext() {
+        return this.getStateGroup().getStateContext();
+    }
+
     void init() throws Exception;
 
     void initOnError(Exception e);

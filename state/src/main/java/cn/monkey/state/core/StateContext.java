@@ -1,5 +1,7 @@
 package cn.monkey.state.core;
 
+import cn.monkey.commons.utils.AttributeKey;
+
 public interface StateContext {
 
     StateContext EMPTY = new StateContext() {

@@ -1,12 +1,14 @@
 package cn.monkey.state.core;
 
+import cn.monkey.commons.utils.AttributeKey;
+
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultStateContext implements StateContext {
+public class SimpleStateContext implements StateContext {
 
     protected final ConcurrentHashMap<AttributeKey<?>, Object> map;
 
-    public DefaultStateContext(){
+    public SimpleStateContext(){
         this.map = new ConcurrentHashMap<>();
     }
 

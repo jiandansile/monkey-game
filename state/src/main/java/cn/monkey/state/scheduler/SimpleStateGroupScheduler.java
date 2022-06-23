@@ -1,13 +1,13 @@
 package cn.monkey.state.scheduler;
 
-import cn.monkey.commons.bean.Countable;
 import cn.monkey.commons.bean.Refreshable;
 import cn.monkey.state.core.StateGroup;
+import cn.monkey.state.scheduler.strategy.WaitingStrategy;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-public class SimpleStateGroupScheduler extends AbstractScheduler implements StateGroupScheduler, Refreshable, Countable {
+public class SimpleStateGroupScheduler extends AbstractScheduler implements StateGroupScheduler, Refreshable {
 
     protected volatile ConcurrentHashMap<String, StateGroup<?>> stateGroupMap;
 
@@ -16,14 +16,18 @@ public class SimpleStateGroupScheduler extends AbstractScheduler implements Stat
     protected final int maxSize;
 
     @SuppressWarnings("rawtypes")
-    private static final AtomicReferenceFieldUpdater<SimpleStateGroupScheduler, StateGroup> STATE_GROUP_UPDATER
+    protected static final AtomicReferenceFieldUpdater<SimpleStateGroupScheduler, StateGroup> STATE_GROUP_UPDATER
             = AtomicReferenceFieldUpdater.newUpdater(SimpleStateGroupScheduler.class, StateGroup.class, "currentAddStateGroup");
 
+    protected final WaitingStrategy waitingStrategy;
+
     protected SimpleStateGroupScheduler(long id,
-                                        int maxSize) {
+                                        int maxSize,
+                                        long updateFrequency) {
         super(id);
         this.maxSize = maxSize;
         this.stateGroupMap = new ConcurrentHashMap<>();
+        this.waitingStrategy = WaitingStrategy.sleeping(updateFrequency);
     }
 
     @Override
@@ -31,6 +35,11 @@ public class SimpleStateGroupScheduler extends AbstractScheduler implements Stat
         return new Thread(() -> {
             for (; ; ) {
                 this.execute();
+                try {
+                    this.waitingStrategy.await();
+                } catch (InterruptedException e) {
+                    log.error("waitingStrategy#await error:\n", e);
+                }
             }
         });
     }
@@ -64,22 +73,22 @@ public class SimpleStateGroupScheduler extends AbstractScheduler implements Stat
 
     @Override
     public int size() {
-        return (this.currentAddStateGroup == null? 0:1) + this.stateGroupMap.size();
+        return (this.currentAddStateGroup == null ? 0 : 1) + this.stateGroupMap.size();
     }
 
     @Override
     public boolean isFull() {
-        return this.size() >=this.maxSize;
+        return this.size() >= this.maxSize;
     }
 
     @Override
     public void refresh() {
         final ConcurrentHashMap<String, StateGroup<?>> stateGroupMap = new ConcurrentHashMap<>();
-        for(StateGroup<?> stateGroup: this.stateGroupMap.values()){
-            if(stateGroup.canClose()){
-               continue;
+        for (StateGroup<?> stateGroup : this.stateGroupMap.values()) {
+            if (stateGroup.canClose()) {
+                continue;
             }
-            stateGroupMap.put(stateGroup.id(),stateGroup);
+            stateGroupMap.put(stateGroup.id(), stateGroup);
         }
         this.stateGroupMap = stateGroupMap;
     }

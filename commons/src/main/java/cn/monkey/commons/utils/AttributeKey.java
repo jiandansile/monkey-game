@@ -1,8 +1,11 @@
-package cn.monkey.state.core;
+package cn.monkey.commons.utils;
 
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class AttributeKey<T> {
+public final class AttributeKey<T> {
+
+    private static final ConcurrentHashMap<String, AttributeKey<?>> constantMap = new ConcurrentHashMap<>();
 
     private final String key;
 
@@ -10,8 +13,9 @@ public class AttributeKey<T> {
         this.key = key;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> AttributeKey<T> newInstance(String key) {
-        return new AttributeKey<>(key);
+        return (AttributeKey<T>) constantMap.computeIfAbsent(key, AttributeKey::new);
     }
 
     @Override

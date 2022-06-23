@@ -3,6 +3,8 @@ package cn.monkey.state.scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public abstract class AbstractScheduler implements Scheduler {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -11,10 +13,11 @@ public abstract class AbstractScheduler implements Scheduler {
 
     protected final Thread t;
 
-    protected volatile boolean isStarted;
+    protected final AtomicBoolean isStarted;
 
     public AbstractScheduler(long id) {
         this.id = id;
+        this.isStarted = new AtomicBoolean(false);
         this.t = this.newThread();
     }
 
@@ -27,23 +30,21 @@ public abstract class AbstractScheduler implements Scheduler {
 
     @Override
     public void start() {
-        if (this.isStarted && !this.t.isInterrupted()) {
-            log.info("{}: {} is start", this.getClass(), this.id());
+        if (this.isStarted.compareAndSet(false, true)) {
+            log.info("{} is start", this.id());
             this.t.start();
-            this.isStarted = true;
         }
     }
 
     @Override
-    public boolean isStart() {
-        return this.isStarted;
+    public boolean isStarted() {
+        return this.isStarted.get();
     }
 
     @Override
     public void stop() {
-        if (!this.t.isInterrupted()) {
+        if (this.isStarted.compareAndSet(true, false) && !this.t.isInterrupted()) {
             this.t.interrupt();
-            this.isStarted = false;
         }
     }
 }
