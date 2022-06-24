@@ -32,14 +32,7 @@ public class SimpleNettySessionManager implements SessionManager<ChannelHandlerC
             if (!v.isAlive()) {
                 return this.sessionFactory.create(ctx);
             }
-            if (v.id().equals(k)) {
-                return v;
-            }
-            try {
-                v.close();
-            } catch (IOException ignore) {
-            }
-            return this.sessionFactory.create(ctx);
+            return v;
         });
         this.sessionMap = sessionMap;
         return session;
