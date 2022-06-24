@@ -1,6 +1,8 @@
 package cn.monkey.state.core;
 
-public interface StateGroup<E> {
+import java.io.Closeable;
+
+public interface StateGroup<E> extends Closeable {
 
     String id();
 
