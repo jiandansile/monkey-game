@@ -7,6 +7,8 @@ import cn.monkey.proto.Command;
 import cn.monkey.server.Session;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerManager implements Refreshable {
@@ -20,7 +22,7 @@ public class PlayerManager implements Refreshable {
         this.playerMap = new ConcurrentHashMap<>();
     }
 
-    protected User wrapper(Command.Package pkg){
+    protected User wrapper(Command.Package pkg) {
         try {
             cn.monkey.proto.User.Login login = cn.monkey.proto.User.Login.parseFrom(pkg.getContent());
             String username = login.getUsername();
@@ -33,8 +35,7 @@ public class PlayerManager implements Refreshable {
         }
     }
 
-    public Player findOrCreate(Session session, Command.Package pkg) {
-        User user = this.wrapper(pkg);
+    public Player findOrCreate(Session session, User user) {
         final ConcurrentHashMap<String, Player> playerMap = this.playerMap;
         Player p = playerMap.compute(user.getUid(), (s, player) -> {
             if (null == player) {
@@ -43,12 +44,21 @@ public class PlayerManager implements Refreshable {
             player.setSession(session);
             return player;
         });
+        p.refreshLastOperateTime();
         this.playerMap = playerMap;
         return p;
     }
 
     @Override
     public void refresh() {
-
+        final ConcurrentHashMap<String, Player> playerMap = this.playerMap;
+        Iterator<Map.Entry<String, Player>> iterator = playerMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Player> next = iterator.next();
+            Player value = next.getValue();
+            if (!value.isActive()) {
+                iterator.remove();
+            }
+        }
     }
 }

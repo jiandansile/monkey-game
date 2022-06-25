@@ -35,14 +35,14 @@ public class Player {
     }
 
     public void setSession(Session session) {
-        if(this.session.id().equals(session.id())){
+        if (this.session.id().equals(session.id())) {
             return;
         }
         this.session = session;
     }
 
-    public long getLastOperateTime() {
-        return this.lastOperateTime;
+    public boolean isActive() {
+        return this.session.isActive();
     }
 
     public void refreshLastOperateTime() {

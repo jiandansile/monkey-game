@@ -1,5 +1,6 @@
 package cn.monkey.server;
 
+import cn.monkey.proto.User;
 import io.netty.util.AttributeKey;
 
 import java.io.Closeable;
@@ -11,9 +12,11 @@ public interface Session extends Closeable {
 
     <T> T setAttribute(AttributeKey<T> key, T val);
 
+    <T> T getAttribute(AttributeKey<T> key);
+
     void write(Object data);
 
-    boolean isAlive();
+    boolean isActive();
 
     @Override
     void close() throws IOException;

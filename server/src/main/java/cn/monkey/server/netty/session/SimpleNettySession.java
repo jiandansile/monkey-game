@@ -32,6 +32,11 @@ public class SimpleNettySession implements Session {
     }
 
     @Override
+    public <T> T getAttribute(AttributeKey<T> key) {
+        return this.ctx.channel().attr(key).get();
+    }
+
+    @Override
     public void write(Object data) {
         if (null == data) {
             return;
@@ -50,7 +55,7 @@ public class SimpleNettySession implements Session {
     }
 
     @Override
-    public boolean isAlive() {
+    public boolean isActive() {
         return this.ctx.channel().isActive();
     }
 

@@ -10,3 +10,7 @@ message Login {
   string password = 2;
   string uid = 3;
 }
+
+message Session {
+  string token = 1;
+}

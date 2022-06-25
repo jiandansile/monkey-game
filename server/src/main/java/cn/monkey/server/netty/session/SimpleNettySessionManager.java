@@ -29,7 +29,7 @@ public class SimpleNettySessionManager implements SessionManager<ChannelHandlerC
             if (null == v) {
                 return this.sessionFactory.create(ctx);
             }
-            if (!v.isAlive()) {
+            if (!v.isActive()) {
                 return this.sessionFactory.create(ctx);
             }
             return v;
@@ -44,7 +44,7 @@ public class SimpleNettySessionManager implements SessionManager<ChannelHandlerC
         while (iterator.hasNext()) {
             Map.Entry<String, Session> next = iterator.next();
             Session value = next.getValue();
-            if (!value.isAlive()) {
+            if (!value.isActive()) {
                 iterator.remove();
             }
         }

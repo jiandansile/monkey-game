@@ -121,9 +121,15 @@ public class SimpleSchedulerManager<Event> implements SchedulerManager<Event>, C
     @Override
     public void refresh() {
         final ConcurrentHashMap<Long, StateGroupScheduler> stateGroupSchedulerMap = new ConcurrentHashMap<>();
+        int size = this.stateGroupSchedulerMap.size();
+        if (size <= 0) {
+            return;
+        }
         for (StateGroupScheduler scheduler : this.stateGroupSchedulerMap.values()) {
-            if (scheduler.isEmpty()) {
+            // StateGroupScheduler 的数量最好超过 EventPublisherScheduler的数量
+            if (scheduler.isEmpty() && size > this.schedulerManagerConfig.getEventPublisherSchedulerSize()) {
                 scheduler.stop();
+                size--;
                 continue;
             }
             stateGroupSchedulerMap.put(scheduler.id(), scheduler);
