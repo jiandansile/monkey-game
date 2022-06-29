@@ -19,7 +19,7 @@ public class SchedulerManagerConfig {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
         private final SchedulerManagerConfig config;
 
         Builder() {

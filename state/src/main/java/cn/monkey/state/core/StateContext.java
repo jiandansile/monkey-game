@@ -14,4 +14,9 @@ public interface StateContext {
     default <T> T set(AttributeKey<T> key, T val) {
         throw new UnsupportedOperationException();
     }
+
+    @SuppressWarnings("unchecked")
+    default <T extends StateContext> T self(AttributeKey<T> key) {
+        return (T) this;
+    }
 }
