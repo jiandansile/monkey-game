@@ -24,7 +24,7 @@ public class StateGroupSchedulerFactoryConfig {
         return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
         private final StateGroupSchedulerFactoryConfig config;
 
         Builder() {
