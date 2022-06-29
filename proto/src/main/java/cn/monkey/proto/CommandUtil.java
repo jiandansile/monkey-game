@@ -4,7 +4,7 @@ import com.google.protobuf.ByteString;
 
 public abstract class CommandUtil {
 
-    static Command.ResultMessage resultMessage(int code, String msg) {
+    public static Command.ResultMessage resultMessage(int code, String msg) {
         Command.ResultMessage.Builder builder = Command.ResultMessage.newBuilder();
         builder.setCode(code);
         if (msg != null && msg.length() > 0) {

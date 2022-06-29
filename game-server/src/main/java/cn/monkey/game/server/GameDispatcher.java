@@ -1,12 +1,11 @@
 package cn.monkey.game.server;
 
-import cn.monkey.data.vo.ResultCode;
 import cn.monkey.game.core.PlayerCmdPair;
 import cn.monkey.game.core.PlayerManager;
 import cn.monkey.game.repository.UserRepository;
+import cn.monkey.game.utils.GameCmdUtil;
 import cn.monkey.proto.CmdType;
 import cn.monkey.proto.Command;
-import cn.monkey.proto.CommandUtil;
 import cn.monkey.proto.User;
 import cn.monkey.server.Dispatcher;
 import cn.monkey.server.Session;
@@ -65,8 +64,8 @@ public class GameDispatcher implements Dispatcher {
             return;
         }
         try {
-            switch (cmdType) {
-                case CmdType.LOGIN -> Mono.just(Tuples.of(session, pkg))
+            if (cmdType == CmdType.LOGIN) {
+                Mono.just(Tuples.of(session, pkg))
                         .map(p -> {
                             try {
                                 return User.Session.parseFrom(p.getT2().getContent());
@@ -78,10 +77,11 @@ public class GameDispatcher implements Dispatcher {
                         .doOnNext(user -> this.playerManager.findOrCreate(session, user))
                         .doOnNext(user -> session.setAttribute(USER_KEY, user))
                         .switchIfEmpty(Mono.error(new IllegalArgumentException("session is not exists")))
-                        .doOnError(e -> session.write(onError(e)))
+                        .doOnError(e -> session.write(GameCmdUtil.error(e)))
                         .subscribeOn(this.loginScheduler)
                         .subscribe();
-                default -> Mono.just(pkg)
+            } else {
+                Mono.just(pkg)
                         .flatMap(p -> {
                             String groupId = "";
                             cn.monkey.data.User user = session.getAttribute(USER_KEY);
@@ -92,18 +92,12 @@ public class GameDispatcher implements Dispatcher {
                         })
                         .switchIfEmpty(Mono.error(new IllegalArgumentException("user is not login")))
                         .doOnNext(t -> this.schedulerManager.addEvent(t.getT2(), new PlayerCmdPair(t.getT1(), pkg)))
-                        .doOnError(e -> session.write(onError(e)))
+                        .doOnError(e -> session.write(GameCmdUtil.error(e)))
                         .subscribeOn(this.scheduler)
                         .subscribe();
             }
         } finally {
             reentrantLock.unlock();
         }
-    }
-
-
-    static Command.PackageGroup onError(Throwable throwable) {
-        Command.Package pkg = CommandUtil.pkg(ResultCode.ERROR, throwable.getMessage(), null, null);
-        return CommandUtil.packageGroup(pkg);
     }
 }
