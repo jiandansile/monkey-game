@@ -28,6 +28,11 @@ public abstract class GameState extends OncePerInitState<PlayerCmdPair> {
         this.handleCmd(playerCmdPair.getPlayer(), pkg);
     }
 
+    @Override
+    public GameStateContext getStateContext() {
+        return (GameStateContext) super.getStateContext();
+    }
+
     protected void enter(Player player, Command.Package pkg) {
 
     }

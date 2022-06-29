@@ -14,6 +14,12 @@ import org.springframework.context.annotation.Configuration;
 public class StateConfig {
 
     @Bean
+    Timer timer(){
+        return new Timer() {
+        };
+    }
+
+    @Bean
     StateGroupSchedulerFactoryConfig stateGroupSchedulerFactoryConfig() {
         return StateGroupSchedulerFactoryConfig.newBuilder().build();
     }

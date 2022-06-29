@@ -18,6 +18,7 @@ public class Player {
                   User user,
                   Timer timer) {
         this.user = user;
+        this.session = session;
         this.timer = timer;
         this.lastOperateTime = timer.getCurrentTimeMs();
     }

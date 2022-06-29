@@ -598,12 +598,22 @@ public final class Command {
     cn.monkey.proto.Command.ResultMessageOrBuilder getResultMsgOrBuilder();
 
     /**
-     * <code>optional int32 cmdType = 2;</code>
+     * <code>optional string groupId = 2;</code>
+     */
+    java.lang.String getGroupId();
+    /**
+     * <code>optional string groupId = 2;</code>
+     */
+    com.google.protobuf.ByteString
+        getGroupIdBytes();
+
+    /**
+     * <code>optional int32 cmdType = 3;</code>
      */
     int getCmdType();
 
     /**
-     * <code>optional bytes content = 3;</code>
+     * <code>optional bytes content = 4;</code>
      */
     com.google.protobuf.ByteString getContent();
   }
@@ -619,6 +629,7 @@ public final class Command {
       super(builder);
     }
     private Package() {
+      groupId_ = "";
       cmdType_ = 0;
       content_ = com.google.protobuf.ByteString.EMPTY;
     }
@@ -661,12 +672,18 @@ public final class Command {
 
               break;
             }
-            case 16: {
+            case 18: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              groupId_ = s;
+              break;
+            }
+            case 24: {
 
               cmdType_ = input.readInt32();
               break;
             }
-            case 26: {
+            case 34: {
 
               content_ = input.readBytes();
               break;
@@ -715,19 +732,53 @@ public final class Command {
       return getResultMsg();
     }
 
-    public static final int CMDTYPE_FIELD_NUMBER = 2;
+    public static final int GROUPID_FIELD_NUMBER = 2;
+    private volatile java.lang.Object groupId_;
+    /**
+     * <code>optional string groupId = 2;</code>
+     */
+    public java.lang.String getGroupId() {
+      java.lang.Object ref = groupId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        groupId_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>optional string groupId = 2;</code>
+     */
+    public com.google.protobuf.ByteString
+        getGroupIdBytes() {
+      java.lang.Object ref = groupId_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        groupId_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int CMDTYPE_FIELD_NUMBER = 3;
     private int cmdType_;
     /**
-     * <code>optional int32 cmdType = 2;</code>
+     * <code>optional int32 cmdType = 3;</code>
      */
     public int getCmdType() {
       return cmdType_;
     }
 
-    public static final int CONTENT_FIELD_NUMBER = 3;
+    public static final int CONTENT_FIELD_NUMBER = 4;
     private com.google.protobuf.ByteString content_;
     /**
-     * <code>optional bytes content = 3;</code>
+     * <code>optional bytes content = 4;</code>
      */
     public com.google.protobuf.ByteString getContent() {
       return content_;
@@ -748,11 +799,14 @@ public final class Command {
       if (resultMsg_ != null) {
         output.writeMessage(1, getResultMsg());
       }
+      if (!getGroupIdBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, groupId_);
+      }
       if (cmdType_ != 0) {
-        output.writeInt32(2, cmdType_);
+        output.writeInt32(3, cmdType_);
       }
       if (!content_.isEmpty()) {
-        output.writeBytes(3, content_);
+        output.writeBytes(4, content_);
       }
     }
 
@@ -765,13 +819,16 @@ public final class Command {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getResultMsg());
       }
+      if (!getGroupIdBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, groupId_);
+      }
       if (cmdType_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, cmdType_);
+          .computeInt32Size(3, cmdType_);
       }
       if (!content_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, content_);
+          .computeBytesSize(4, content_);
       }
       memoizedSize = size;
       return size;
@@ -794,6 +851,8 @@ public final class Command {
         result = result && getResultMsg()
             .equals(other.getResultMsg());
       }
+      result = result && getGroupId()
+          .equals(other.getGroupId());
       result = result && (getCmdType()
           == other.getCmdType());
       result = result && getContent()
@@ -812,6 +871,8 @@ public final class Command {
         hash = (37 * hash) + RESULTMSG_FIELD_NUMBER;
         hash = (53 * hash) + getResultMsg().hashCode();
       }
+      hash = (37 * hash) + GROUPID_FIELD_NUMBER;
+      hash = (53 * hash) + getGroupId().hashCode();
       hash = (37 * hash) + CMDTYPE_FIELD_NUMBER;
       hash = (53 * hash) + getCmdType();
       hash = (37 * hash) + CONTENT_FIELD_NUMBER;
@@ -940,6 +1001,8 @@ public final class Command {
           resultMsg_ = null;
           resultMsgBuilder_ = null;
         }
+        groupId_ = "";
+
         cmdType_ = 0;
 
         content_ = com.google.protobuf.ByteString.EMPTY;
@@ -971,6 +1034,7 @@ public final class Command {
         } else {
           result.resultMsg_ = resultMsgBuilder_.build();
         }
+        result.groupId_ = groupId_;
         result.cmdType_ = cmdType_;
         result.content_ = content_;
         onBuilt();
@@ -1016,6 +1080,10 @@ public final class Command {
         if (other == cn.monkey.proto.Command.Package.getDefaultInstance()) return this;
         if (other.hasResultMsg()) {
           mergeResultMsg(other.getResultMsg());
+        }
+        if (!other.getGroupId().isEmpty()) {
+          groupId_ = other.groupId_;
+          onChanged();
         }
         if (other.getCmdType() != 0) {
           setCmdType(other.getCmdType());
@@ -1166,15 +1234,84 @@ public final class Command {
         return resultMsgBuilder_;
       }
 
+      private java.lang.Object groupId_ = "";
+      /**
+       * <code>optional string groupId = 2;</code>
+       */
+      public java.lang.String getGroupId() {
+        java.lang.Object ref = groupId_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          groupId_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>optional string groupId = 2;</code>
+       */
+      public com.google.protobuf.ByteString
+          getGroupIdBytes() {
+        java.lang.Object ref = groupId_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          groupId_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>optional string groupId = 2;</code>
+       */
+      public Builder setGroupId(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        groupId_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string groupId = 2;</code>
+       */
+      public Builder clearGroupId() {
+        
+        groupId_ = getDefaultInstance().getGroupId();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional string groupId = 2;</code>
+       */
+      public Builder setGroupIdBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        groupId_ = value;
+        onChanged();
+        return this;
+      }
+
       private int cmdType_ ;
       /**
-       * <code>optional int32 cmdType = 2;</code>
+       * <code>optional int32 cmdType = 3;</code>
        */
       public int getCmdType() {
         return cmdType_;
       }
       /**
-       * <code>optional int32 cmdType = 2;</code>
+       * <code>optional int32 cmdType = 3;</code>
        */
       public Builder setCmdType(int value) {
         
@@ -1183,7 +1320,7 @@ public final class Command {
         return this;
       }
       /**
-       * <code>optional int32 cmdType = 2;</code>
+       * <code>optional int32 cmdType = 3;</code>
        */
       public Builder clearCmdType() {
         
@@ -1194,13 +1331,13 @@ public final class Command {
 
       private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional bytes content = 3;</code>
+       * <code>optional bytes content = 4;</code>
        */
       public com.google.protobuf.ByteString getContent() {
         return content_;
       }
       /**
-       * <code>optional bytes content = 3;</code>
+       * <code>optional bytes content = 4;</code>
        */
       public Builder setContent(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -1212,7 +1349,7 @@ public final class Command {
         return this;
       }
       /**
-       * <code>optional bytes content = 3;</code>
+       * <code>optional bytes content = 4;</code>
        */
       public Builder clearContent() {
         
@@ -2029,12 +2166,12 @@ public final class Command {
   static {
     java.lang.String[] descriptorData = {
       "\n\tCmd.proto\022\017cn.monkey.proto\"*\n\rResultMe" +
-      "ssage\022\014\n\004code\030\001 \001(\005\022\013\n\003msg\030\002 \001(\t\"^\n\007Pack" +
+      "ssage\022\014\n\004code\030\001 \001(\005\022\013\n\003msg\030\002 \001(\t\"o\n\007Pack" +
       "age\0221\n\tresultMsg\030\001 \001(\0132\036.cn.monkey.proto" +
-      ".ResultMessage\022\017\n\007cmdType\030\002 \001(\005\022\017\n\007conte" +
-      "nt\030\003 \001(\014\":\n\014PackageGroup\022*\n\010packages\030\001 \003" +
-      "(\0132\030.cn.monkey.proto.PackageB\013B\007CommandH" +
-      "\001b\006proto3"
+      ".ResultMessage\022\017\n\007groupId\030\002 \001(\t\022\017\n\007cmdTy" +
+      "pe\030\003 \001(\005\022\017\n\007content\030\004 \001(\014\":\n\014PackageGrou" +
+      "p\022*\n\010packages\030\001 \003(\0132\030.cn.monkey.proto.Pa" +
+      "ckageB\013B\007CommandH\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -2059,7 +2196,7 @@ public final class Command {
     internal_static_cn_monkey_proto_Package_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_cn_monkey_proto_Package_descriptor,
-        new java.lang.String[] { "ResultMsg", "CmdType", "Content", });
+        new java.lang.String[] { "ResultMsg", "GroupId", "CmdType", "Content", });
     internal_static_cn_monkey_proto_PackageGroup_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_cn_monkey_proto_PackageGroup_fieldAccessorTable = new

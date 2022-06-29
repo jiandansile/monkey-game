@@ -32,6 +32,7 @@ public class GameDispatcher implements Dispatcher {
     private final PlayerManager playerManager;
 
     private final UserRepository userRepository;
+
     private final Scheduler scheduler;
 
     private final Scheduler loginScheduler;
@@ -65,10 +66,10 @@ public class GameDispatcher implements Dispatcher {
         }
         try {
             if (cmdType == CmdType.LOGIN) {
-                Mono.just(Tuples.of(session, pkg))
+                Mono.just(pkg)
                         .map(p -> {
                             try {
-                                return User.Session.parseFrom(p.getT2().getContent());
+                                return User.Session.parseFrom(p.getContent());
                             } catch (InvalidProtocolBufferException e) {
                                 throw new RuntimeException(e);
                             }
@@ -83,7 +84,7 @@ public class GameDispatcher implements Dispatcher {
             } else {
                 Mono.just(pkg)
                         .flatMap(p -> {
-                            String groupId = "";
+                            String groupId = p.getGroupId();
                             cn.monkey.data.User user = session.getAttribute(USER_KEY);
                             if (user == null) {
                                 return Mono.empty();
