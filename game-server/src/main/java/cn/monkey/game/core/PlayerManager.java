@@ -22,18 +22,6 @@ public class PlayerManager implements Refreshable {
         this.playerMap = new ConcurrentHashMap<>();
     }
 
-    protected User wrapper(Command.Package pkg) {
-        try {
-            cn.monkey.proto.User.Login login = cn.monkey.proto.User.Login.parseFrom(pkg.getContent());
-            String username = login.getUsername();
-            User user = new User();
-            user.setUsername(username);
-            user.setUid(login.getUid());
-            return user;
-        } catch (InvalidProtocolBufferException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public Player findOrCreate(Session session, User user) {
         final ConcurrentHashMap<String, Player> playerMap = this.playerMap;

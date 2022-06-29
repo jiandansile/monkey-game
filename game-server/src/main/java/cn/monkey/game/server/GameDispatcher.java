@@ -1,10 +1,12 @@
 package cn.monkey.game.server;
 
+import cn.monkey.data.vo.ResultCode;
 import cn.monkey.game.core.PlayerCmdPair;
 import cn.monkey.game.core.PlayerManager;
 import cn.monkey.game.repository.UserRepository;
 import cn.monkey.proto.CmdType;
 import cn.monkey.proto.Command;
+import cn.monkey.proto.CommandUtil;
 import cn.monkey.proto.User;
 import cn.monkey.server.Dispatcher;
 import cn.monkey.server.Session;
@@ -33,6 +35,8 @@ public class GameDispatcher implements Dispatcher {
     private final UserRepository userRepository;
     private final Scheduler scheduler;
 
+    private final Scheduler loginScheduler;
+
     public GameDispatcher(SchedulerManager<PlayerCmdPair> schedulerManager,
                           PlayerManager playerManager,
                           UserRepository userRepository) {
@@ -49,6 +53,7 @@ public class GameDispatcher implements Dispatcher {
                     }
                 });
         this.scheduler = Schedulers.newSingle("dispatcher");
+        this.loginScheduler = Schedulers.newParallel("login", 5);
     }
 
 
@@ -73,29 +78,32 @@ public class GameDispatcher implements Dispatcher {
                         .doOnNext(user -> this.playerManager.findOrCreate(session, user))
                         .doOnNext(user -> session.setAttribute(USER_KEY, user))
                         .switchIfEmpty(Mono.error(new IllegalArgumentException("session is not exists")))
-                        // todo
-                        .doOnError(e -> session.write(e.getMessage()))
-                        .subscribeOn(this.scheduler)
+                        .doOnError(e -> session.write(onError(e)))
+                        .subscribeOn(this.loginScheduler)
                         .subscribe();
-                default -> Mono.just(Tuples.of(session, pkg))
-                        .flatMap(t -> {
+                default -> Mono.just(pkg)
+                        .flatMap(p -> {
                             String groupId = "";
                             cn.monkey.data.User user = session.getAttribute(USER_KEY);
-                            if(user == null){
+                            if (user == null) {
                                 return Mono.empty();
                             }
-                            return Mono.just(Tuples.of((this.playerManager.findOrCreate(t.getT1(), user)), t.getT2(), groupId));
+                            return Mono.just(Tuples.of((this.playerManager.findOrCreate(session, user)), groupId));
                         })
                         .switchIfEmpty(Mono.error(new IllegalArgumentException("user is not login")))
-                        .doOnNext(t -> this.schedulerManager.addEvent(t.getT3(), new PlayerCmdPair(t.getT1(), t.getT2())))
-                        // todo
-                        .doOnError(e -> session.write(e.getMessage()))
+                        .doOnNext(t -> this.schedulerManager.addEvent(t.getT2(), new PlayerCmdPair(t.getT1(), pkg)))
+                        .doOnError(e -> session.write(onError(e)))
                         .subscribeOn(this.scheduler)
                         .subscribe();
             }
         } finally {
             reentrantLock.unlock();
         }
+    }
 
+
+    static Command.PackageGroup onError(Throwable throwable) {
+        Command.Package pkg = CommandUtil.pkg(ResultCode.ERROR, throwable.getMessage(), null, null);
+        return CommandUtil.packageGroup(pkg);
     }
 }
