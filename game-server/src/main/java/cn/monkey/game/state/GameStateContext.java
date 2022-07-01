@@ -12,6 +12,8 @@ public class GameStateContext implements StateContext {
 
     private final Map<String, Player> players;
 
+    private String password;
+
     public GameStateContext(int playerSize) {
         this.players = new HashMap<>(playerSize);
         this.playerSize = playerSize;
@@ -27,5 +29,13 @@ public class GameStateContext implements StateContext {
         }
         this.players.put(player.getId(), player);
         return true;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

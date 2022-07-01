@@ -6,7 +6,7 @@ import cn.monkey.game.repository.UserRepository;
 import cn.monkey.game.utils.GameCmdUtil;
 import cn.monkey.proto.CmdType;
 import cn.monkey.proto.Command;
-import cn.monkey.proto.User;
+import cn.monkey.proto.Game;
 import cn.monkey.server.Dispatcher;
 import cn.monkey.server.Session;
 import cn.monkey.state.scheduler.SchedulerManager;
@@ -69,7 +69,7 @@ public class GameDispatcher implements Dispatcher {
                 Mono.just(pkg)
                         .map(p -> {
                             try {
-                                return User.Session.parseFrom(p.getContent());
+                                return Game.Session.parseFrom(p.getContent());
                             } catch (InvalidProtocolBufferException e) {
                                 throw new RuntimeException(e);
                             }

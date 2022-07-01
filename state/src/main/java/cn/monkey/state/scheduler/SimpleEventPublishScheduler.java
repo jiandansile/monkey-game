@@ -6,33 +6,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 
-public class SimpleEventPublishScheduler extends AbstractScheduler implements EventPublishScheduler {
+public class SimpleEventPublishScheduler extends EventLoopScheduler implements EventPublishScheduler {
 
     protected final BlockingQueue<Runnable> taskQueue;
 
-    protected final WaitingStrategy waitingStrategy;
-
-    public SimpleEventPublishScheduler(long id) {
-        super(id);
+    public SimpleEventPublishScheduler(long id, ThreadFactory threadFactory) {
+        super(id, WaitingStrategy.blocking(), threadFactory);
         this.taskQueue = new LinkedBlockingQueue<>();
-        this.waitingStrategy = WaitingStrategy.blocking();
     }
 
     @Override
-    protected Thread newThread() {
-        return new Thread(() -> {
-            for (; ; ) {
-                execute();
-                try {
-                    this.waitingStrategy.await();
-                } catch (InterruptedException e) {
-                    log.error("waitingStrategy#await error:\n", e);
-                }
-            }
-        });
-    }
-
     protected final void execute() {
         if (this.taskQueue.isEmpty()) {
             return;

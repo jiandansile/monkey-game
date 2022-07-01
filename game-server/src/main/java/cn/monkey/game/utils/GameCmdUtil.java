@@ -1,6 +1,7 @@
 package cn.monkey.game.utils;
 
 import cn.monkey.data.vo.ResultCode;
+import cn.monkey.game.state.GameStateContext;
 import cn.monkey.proto.Command;
 import cn.monkey.proto.CommandUtil;
 
@@ -11,5 +12,9 @@ public abstract class GameCmdUtil {
         Command.Package.Builder builder = Command.Package.newBuilder();
         builder.setResultMsg(resultMessage);
         return CommandUtil.packageGroup(builder.build());
+    }
+
+    public static Command.PackageGroup enterResult(String msg, GameStateContext stateContext){
+        return null;
     }
 }

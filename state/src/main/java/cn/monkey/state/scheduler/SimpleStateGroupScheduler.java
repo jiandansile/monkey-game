@@ -5,9 +5,10 @@ import cn.monkey.state.core.StateGroup;
 import cn.monkey.state.scheduler.strategy.WaitingStrategy;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-public class SimpleStateGroupScheduler extends AbstractScheduler implements StateGroupScheduler, Refreshable {
+public class SimpleStateGroupScheduler extends EventLoopScheduler implements StateGroupScheduler, Refreshable {
 
     protected volatile ConcurrentHashMap<String, StateGroup<?>> stateGroupMap;
 
@@ -19,31 +20,16 @@ public class SimpleStateGroupScheduler extends AbstractScheduler implements Stat
     protected static final AtomicReferenceFieldUpdater<SimpleStateGroupScheduler, StateGroup> STATE_GROUP_UPDATER
             = AtomicReferenceFieldUpdater.newUpdater(SimpleStateGroupScheduler.class, StateGroup.class, "currentAddStateGroup");
 
-    protected final WaitingStrategy waitingStrategy;
-
     protected SimpleStateGroupScheduler(long id,
+                                        ThreadFactory threadFactory,
                                         int maxSize,
                                         long updateFrequency) {
-        super(id);
+        super(id, WaitingStrategy.sleeping(updateFrequency), threadFactory);
         this.maxSize = maxSize;
         this.stateGroupMap = new ConcurrentHashMap<>();
-        this.waitingStrategy = WaitingStrategy.sleeping(updateFrequency);
     }
 
     @Override
-    protected Thread newThread() {
-        return new Thread(() -> {
-            for (; ; ) {
-                this.execute();
-                try {
-                    this.waitingStrategy.await();
-                } catch (InterruptedException e) {
-                    log.error("waitingStrategy#await error:\n", e);
-                }
-            }
-        });
-    }
-
     protected final void execute() {
         for (StateGroup<?> stateGroup : this.stateGroupMap.values()) {
             try {

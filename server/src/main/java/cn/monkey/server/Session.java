@@ -1,6 +1,5 @@
 package cn.monkey.server;
 
-import cn.monkey.proto.User;
 import io.netty.util.AttributeKey;
 
 import java.io.Closeable;
