@@ -21,10 +21,10 @@ public class SimpleStateGroupScheduler extends EventLoopScheduler implements Sta
             = AtomicReferenceFieldUpdater.newUpdater(SimpleStateGroupScheduler.class, StateGroup.class, "currentAddStateGroup");
 
     protected SimpleStateGroupScheduler(long id,
+                                        WaitingStrategy waitingStrategy,
                                         ThreadFactory threadFactory,
-                                        int maxSize,
-                                        long updateFrequency) {
-        super(id, WaitingStrategy.sleeping(updateFrequency), threadFactory);
+                                        int maxSize) {
+        super(id, waitingStrategy, threadFactory);
         this.maxSize = maxSize;
         this.stateGroupMap = new ConcurrentHashMap<>();
     }

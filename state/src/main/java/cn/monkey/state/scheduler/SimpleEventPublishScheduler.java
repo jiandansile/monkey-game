@@ -12,8 +12,8 @@ public class SimpleEventPublishScheduler extends EventLoopScheduler implements E
 
     protected final BlockingQueue<Runnable> taskQueue;
 
-    public SimpleEventPublishScheduler(long id, ThreadFactory threadFactory) {
-        super(id, WaitingStrategy.blocking(), threadFactory);
+    public SimpleEventPublishScheduler(long id, WaitingStrategy waitingStrategy, ThreadFactory threadFactory) {
+        super(id, waitingStrategy, threadFactory);
         this.taskQueue = new LinkedBlockingQueue<>();
     }
 

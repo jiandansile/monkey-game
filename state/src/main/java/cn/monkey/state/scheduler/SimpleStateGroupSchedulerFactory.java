@@ -1,5 +1,6 @@
 package cn.monkey.state.scheduler;
 
+import cn.monkey.state.scheduler.strategy.WaitingStrategy;
 import com.google.common.base.Preconditions;
 
 import java.util.concurrent.Executors;
@@ -11,16 +12,19 @@ public class SimpleStateGroupSchedulerFactory implements StateGroupSchedulerFact
 
     protected ThreadFactory threadFactory = Executors.defaultThreadFactory();
 
+    protected final WaitingStrategy waitingStrategy;
+
     public SimpleStateGroupSchedulerFactory(StateGroupSchedulerFactoryConfig stateGroupFactoryConfig) {
         this.stateGroupFactoryConfig = stateGroupFactoryConfig;
+        this.waitingStrategy = WaitingStrategy.sleeping(stateGroupFactoryConfig.getUpdateFrequency());
     }
 
     @Override
     public StateGroupScheduler create(long id) {
         return new SimpleStateGroupScheduler(id,
+                this.waitingStrategy,
                 this.threadFactory,
-                this.stateGroupFactoryConfig.getMaxSize(),
-                this.stateGroupFactoryConfig.getUpdateFrequency());
+                this.stateGroupFactoryConfig.getMaxSize());
     }
 
     @Override
