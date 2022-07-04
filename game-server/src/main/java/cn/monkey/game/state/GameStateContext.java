@@ -1,8 +1,10 @@
 package cn.monkey.game.state;
 
 import cn.monkey.game.core.Player;
+import cn.monkey.game.data.User;
 import cn.monkey.state.core.StateContext;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,16 +21,22 @@ public class GameStateContext implements StateContext {
         this.playerSize = playerSize;
     }
 
-    public boolean tryAddPlayer(Player player) {
-        if (this.players.containsKey(player.getId())) {
-            this.players.put(player.getId(), player);
+    public boolean tryAddPlayer(User user) {
+        String uid = user.getUid();
+        if (this.players.containsKey(uid)) {
+            Player player = players.get(uid);
+            player.setUser(user);
             return true;
         }
         if (this.players.size() >= this.playerSize) {
             return false;
         }
-        this.players.put(player.getId(), player);
+        this.players.put(uid, new Player(user));
         return true;
+    }
+
+    public Collection<Player> getPlayers(){
+        return this.players.values();
     }
 
     public String getPassword() {

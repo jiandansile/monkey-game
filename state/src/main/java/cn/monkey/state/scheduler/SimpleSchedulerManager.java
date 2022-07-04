@@ -29,7 +29,7 @@ public class SimpleSchedulerManager<Event> implements SchedulerManager<Event>, C
 
     protected volatile ConcurrentHashMap<Long, StateGroupScheduler> stateGroupSchedulerMap;
 
-    static AtomicLong STATE_GROUP_SCHEDULER_ID = new AtomicLong(0);
+    private AtomicLong stateGroupSchedulerIdCounter = new AtomicLong(0);
 
     public SimpleSchedulerManager(StateGroupPool<Event> stateGroupPool,
                                   StateGroupSchedulerFactory stateGroupSchedulerFactory,
@@ -90,7 +90,7 @@ public class SimpleSchedulerManager<Event> implements SchedulerManager<Event>, C
             log.error("schedulerManager is full");
             return;
         }
-        StateGroupScheduler scheduler = this.stateGroupSchedulerFactory.create(STATE_GROUP_SCHEDULER_ID.getAndIncrement());
+        StateGroupScheduler scheduler = this.stateGroupSchedulerFactory.create(stateGroupSchedulerIdCounter.getAndIncrement());
         scheduler.tryAddStateGroup(stateGroup);
         stateGroupSchedulerMap.put(scheduler.id(), scheduler);
         scheduler.start();

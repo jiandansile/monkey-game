@@ -1,8 +1,8 @@
 package cn.monkey.game.server;
 
 import cn.monkey.game.core.PlayerCmdPair;
-import cn.monkey.game.core.PlayerManager;
-import cn.monkey.game.repository.UserRepository;
+import cn.monkey.game.core.UserManager;
+import cn.monkey.game.data.User;
 import cn.monkey.game.utils.GameCmdUtil;
 import cn.monkey.proto.CmdType;
 import cn.monkey.proto.Command;
@@ -26,23 +26,18 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class GameDispatcher implements Dispatcher<Command.Package> {
 
-    static final AttributeKey<cn.monkey.data.User> USER_KEY = AttributeKey.newInstance("user");
+    static final AttributeKey<User> USER_KEY = AttributeKey.newInstance("user");
     private final LoadingCache<String, ReentrantLock> lockCache;
     private final SchedulerManager<PlayerCmdPair> schedulerManager;
-    private final PlayerManager playerManager;
-
-    private final UserRepository userRepository;
-
+    private final UserManager playerManager;
     private final Scheduler scheduler;
 
     private final Scheduler loginScheduler;
 
     public GameDispatcher(SchedulerManager<PlayerCmdPair> schedulerManager,
-                          PlayerManager playerManager,
-                          UserRepository userRepository) {
+                          UserManager playerManager) {
         this.schedulerManager = schedulerManager;
         this.playerManager = playerManager;
-        this.userRepository = userRepository;
         this.lockCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(Duration.ofSeconds(2))
                 .build(new CacheLoader<>() {
@@ -74,8 +69,8 @@ public class GameDispatcher implements Dispatcher<Command.Package> {
                                 throw new RuntimeException(e);
                             }
                         })
-                        .flatMap(userSession -> this.userRepository.get(userSession.getToken()))
-                        .doOnNext(user -> this.playerManager.findOrCreate(session, user))
+                        .map(Game.Session::getToken)
+                        .map(token -> this.playerManager.findOrCreate(session, token))
                         .doOnNext(user -> session.setAttribute(USER_KEY, user))
                         .switchIfEmpty(Mono.error(new IllegalArgumentException("session is not exists")))
                         .doOnError(e -> session.write(GameCmdUtil.error(e)))
@@ -83,16 +78,9 @@ public class GameDispatcher implements Dispatcher<Command.Package> {
                         .subscribe();
             } else {
                 Mono.just(pkg)
-                        .flatMap(p -> {
-                            String groupId = p.getGroupId();
-                            cn.monkey.data.User user = session.getAttribute(USER_KEY);
-                            if (user == null) {
-                                return Mono.empty();
-                            }
-                            return Mono.just(Tuples.of((this.playerManager.findOrCreate(session, user)), groupId));
-                        })
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("user is not login")))
-                        .doOnNext(t -> this.schedulerManager.addEvent(t.getT2(), new PlayerCmdPair(t.getT1(), pkg)))
+                        .map(Command.Package::getGroupId)
+                        .switchIfEmpty(Mono.error(new IllegalArgumentException("groupId is required")))
+                        .doOnNext(t -> this.schedulerManager.addEvent(t, new PlayerCmdPair(session.getAttribute(USER_KEY), pkg)))
                         .doOnError(e -> session.write(GameCmdUtil.error(e)))
                         .subscribeOn(this.scheduler)
                         .subscribe();

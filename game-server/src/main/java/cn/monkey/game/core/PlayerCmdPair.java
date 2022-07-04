@@ -1,17 +1,18 @@
 package cn.monkey.game.core;
 
+import cn.monkey.game.data.User;
 import cn.monkey.proto.Command;
 import com.google.common.base.Preconditions;
 
 public class PlayerCmdPair {
 
-    private final Player player;
+    private final User user;
     private final Command.Package pkg;
 
-    public PlayerCmdPair(Player player, Command.Package pkg) {
+    public PlayerCmdPair(User user, Command.Package pkg) {
         Preconditions.checkNotNull(pkg);
-        Preconditions.checkNotNull(player);
-        this.player = player;
+        Preconditions.checkNotNull(user);
+        this.user = user;
         this.pkg = pkg;
     }
 
@@ -19,7 +20,7 @@ public class PlayerCmdPair {
         return pkg;
     }
 
-    public Player getPlayer() {
-        return player;
+    public User getUser() {
+        return this.user;
     }
 }

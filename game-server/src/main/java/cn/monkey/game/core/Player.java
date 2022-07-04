@@ -1,30 +1,24 @@
 package cn.monkey.game.core;
 
-import cn.monkey.commons.utils.Timer;
-import cn.monkey.data.User;
+import cn.monkey.game.data.User;
 import cn.monkey.proto.Command;
-import cn.monkey.server.Session;
 
 public class Player {
-    private Session session;
+    private User user;
 
-    private final User user;
+    private boolean isReady;
 
-    private final Timer timer;
-
-    private volatile long lastOperateTime;
-
-    public Player(Session session,
-                  User user,
-                  Timer timer) {
+    public Player(User user){
         this.user = user;
-        this.session = session;
-        this.timer = timer;
-        this.lastOperateTime = timer.getCurrentTimeMs();
+        this.isReady = true;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getId() {
-        return this.session.id();
+        return this.user.getUid();
     }
 
     public String getUsername() {
@@ -35,22 +29,11 @@ public class Player {
         return this.user.getUid();
     }
 
-    public void setSession(Session session) {
-        if (this.session.id().equals(session.id())) {
-            return;
-        }
-        this.session = session;
-    }
-
-    public boolean isActive() {
-        return this.session.isActive();
-    }
-
-    public void refreshLastOperateTime() {
-        this.lastOperateTime = this.timer.getCurrentTimeMs();
-    }
-
     public void write(Command.PackageGroup packageGroup) {
-        this.session.write(packageGroup);
+        this.user.write(packageGroup);
+    }
+
+    public void setReady(boolean ready) {
+        this.isReady = ready;
     }
 }
