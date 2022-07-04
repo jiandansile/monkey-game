@@ -16,6 +16,9 @@ public abstract class OncePerInitState<Event> extends AbstractState<Event> {
         if (this.hasInit) {
             return;
         }
+        this.onInit();
         this.hasInit = true;
     }
+
+    protected abstract void onInit();
 }

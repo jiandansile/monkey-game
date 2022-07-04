@@ -25,13 +25,13 @@ public class ProtoBufWebSocketChannelHandler extends SimpleChannelInboundHandler
 
     protected final SessionManager<ChannelHandlerContext> sessionManager;
 
-    protected final List<Filter> filters;
+    protected final List<Filter<Command.Package>> filters;
 
-    protected final Dispatcher dispatcher;
+    protected final Dispatcher<Command.Package> dispatcher;
 
     public ProtoBufWebSocketChannelHandler(SessionManager<ChannelHandlerContext> sessionManager,
-                                           List<Filter> filters,
-                                           Dispatcher dispatcher) {
+                                           List<Filter<Command.Package>> filters,
+                                           Dispatcher<Command.Package> dispatcher) {
         this.sessionManager = sessionManager;
         this.filters = filters;
         this.dispatcher = dispatcher;

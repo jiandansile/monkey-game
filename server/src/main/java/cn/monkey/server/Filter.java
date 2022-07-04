@@ -1,7 +1,5 @@
 package cn.monkey.server;
 
-import cn.monkey.proto.Command;
-
-public interface Filter {
-    boolean filter(Session session, Command.Package pkg);
+public interface Filter<Pkg> {
+    boolean filter(Session session, Pkg pkg);
 }

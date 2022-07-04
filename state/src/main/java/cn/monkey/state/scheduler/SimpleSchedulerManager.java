@@ -49,7 +49,7 @@ public class SimpleSchedulerManager<Event> implements SchedulerManager<Event>, C
 
     protected final Map<Long, EventPublishScheduler> initEventPublishSchedulerMap() {
         int eventPublisherSchedulerSize = this.schedulerManagerConfig.getEventPublisherSchedulerSize();
-        if (eventPublisherSchedulerSize != 1 && eventPublisherSchedulerSize % 2 != 0) {
+        if (eventPublisherSchedulerSize != 1 && (eventPublisherSchedulerSize + 1) % 2 != 0) {
             throw new IllegalArgumentException("invalid eventPublisherSchedulerSize");
         }
         return IntStream.range(0, eventPublisherSchedulerSize)
@@ -62,7 +62,7 @@ public class SimpleSchedulerManager<Event> implements SchedulerManager<Event>, C
     }
 
     protected final EventPublishScheduler findEventPublisherScheduler(String groupId) {
-        long i = groupId.hashCode() & (this.eventPublishSchedulerMap.size() - 1);
+        long i = groupId.hashCode() & this.eventPublishSchedulerMap.size();
         return this.eventPublishSchedulerMap.get(i);
     }
 
@@ -127,7 +127,7 @@ public class SimpleSchedulerManager<Event> implements SchedulerManager<Event>, C
         }
         for (StateGroupScheduler scheduler : this.stateGroupSchedulerMap.values()) {
             // StateGroupScheduler 的数量最好超过 EventPublisherScheduler的数量
-            if (scheduler.isEmpty() && size > this.schedulerManagerConfig.getEventPublisherSchedulerSize()) {
+            if (scheduler.isEmpty() && size > this.schedulerManagerConfig.getStateGroupSchedulerCoreSize()) {
                 scheduler.stop();
                 size--;
                 continue;

@@ -24,7 +24,7 @@ import reactor.util.function.Tuples;
 import java.time.Duration;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class GameDispatcher implements Dispatcher {
+public class GameDispatcher implements Dispatcher<Command.Package> {
 
     static final AttributeKey<cn.monkey.data.User> USER_KEY = AttributeKey.newInstance("user");
     private final LoadingCache<String, ReentrantLock> lockCache;

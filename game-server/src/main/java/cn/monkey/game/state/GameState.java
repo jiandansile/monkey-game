@@ -33,6 +33,11 @@ public abstract class GameState extends OncePerInitState<PlayerCmdPair> {
     }
 
     @Override
+    protected void onInit() {
+        // do nothing here
+    }
+
+    @Override
     public GameStateContext getStateContext() {
         return (GameStateContext) super.getStateContext();
     }
